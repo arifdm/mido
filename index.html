@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#FF4D1C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>MIDO - Mitra Delivery FASTO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #FF4D1C;
+    --primary-dark: #D93A0E;
+    --primary-light: #FFF0EC;
+    --accent: #FFB800;
+    --accent-dark: #CC9400;
+    --success: #00B87A;
+    --success-light: #E6F9F3;
+    --danger: #E53E3E;
+    --danger-light: #FFF5F5;
+    --warning: #FF8C00;
+    --warning-light: #FFF8EE;
+    --bg: #F7F6F3;
+    --card: #FFFFFF;
+    --text: #1A1A1A;
+    --text-2: #555550;
+    --text-3: #9A9990;
+    --border: rgba(0,0,0,0.08);
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+    --radius: 16px;
+    --radius-sm: 10px;
+    --font-head: 'Plus Jakarta Sans', sans-serif;
+    --font-body: 'Space Grotesk', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    max-width: 430px;
+    margin: 0 auto;
+    position: relative;
+    overflow-x: hidden;
+    padding-bottom: 80px;
+  }
+
+  /* Screens */
+  .screen { display: none; flex-direction: column; min-height: calc(100vh - 80px); }
+  .screen.active { display: flex; }
+
+  /* TOP BAR */
+  .topbar {
+    background: var(--card);
+    padding: 16px 20px 12px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid var(--border);
+  }
+  .topbar-row { display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-family: var(--font-head); font-weight: 800; font-size: 22px; color: var(--primary); letter-spacing: -0.5px; }
+  .logo span { color: var(--text); }
+  .status-pill {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 20px;
+    font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .status-pill.online { background: var(--success-light); color: var(--success); }
+  .status-pill.offline { background: #F2F2F0; color: var(--text-3); }
+  .dot { width: 7px; height: 7px; border-radius: 50%; }
+  .dot.green { background: var(--success); }
+  .dot.gray { background: var(--text-3); }
+
+  /* HERO STATS */
+  .hero {
+    background: linear-gradient(135deg, #FF4D1C 0%, #FF7849 100%);
+    padding: 20px 20px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 180px; height: 180px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 50%;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: -20px;
+    width: 200px; height: 200px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+  }
+  .hero-greeting { font-size: 13px; color: rgba(255,255,255,0.75); margin-bottom: 2px; }
+  .hero-name { font-family: var(--font-head); font-weight: 700; font-size: 20px; color: #fff; margin-bottom: 16px; }
+  .hero-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; position: relative; z-index: 1; }
+  .hero-stat {
+    background: rgba(255,255,255,0.15);
+    border-radius: 12px; padding: 10px 8px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  .hero-stat-val { font-family: var(--font-head); font-weight: 700; font-size: 18px; color: #fff; }
+  .hero-stat-label { font-size: 10px; color: rgba(255,255,255,0.7); margin-top: 2px; }
+
+  /* SECTION */
+  .section { padding: 20px 20px 0; }
+  .section-title {
+    font-family: var(--font-head); font-weight: 700; font-size: 15px;
+    color: var(--text); margin-bottom: 12px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .section-title a { font-family: var(--font-body); font-weight: 500; font-size: 12px; color: var(--primary); text-decoration: none; }
+
+  /* CARDS */
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .card + .card { margin-top: 12px; }
+
+  /* ORDER NOTIFICATION CARD */
+  .order-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    border: 2px solid var(--primary);
+    position: relative;
+    animation: orderPulse 2s ease-in-out infinite;
+    margin-bottom: 12px;
+  }
+  @keyframes orderPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255,77,28,0.3); }
+    50% { box-shadow: 0 0 0 8px rgba(255,77,28,0); }
+  }
+  .order-card-header {
+    background: var(--primary);
+    padding: 10px 14px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .order-card-header-left { display: flex; align-items: center; gap: 8px; }
+  .order-badge {
+    background: rgba(255,255,255,0.25);
+    color: #fff;
+    font-size: 10px; font-weight: 700;
+    padding: 3px 8px; border-radius: 20px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .order-header-title { color: #fff; font-size: 12px; font-weight: 600; }
+  .timer-pill {
+    background: var(--accent);
+    color: #000;
+    font-family: var(--font-head);
+    font-weight: 700; font-size: 14px;
+    padding: 4px 10px; border-radius: 20px;
+    min-width: 50px; text-align: center;
+  }
+  .order-card-body { padding: 14px; }
+  .resto-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .resto-icon {
+    width: 42px; height: 42px; border-radius: 10px;
+    background: var(--primary-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+  .resto-name { font-family: var(--font-head); font-weight: 700; font-size: 15px; }
+  .resto-addr { font-size: 12px; color: var(--text-2); margin-top: 2px; }
+  .order-items { font-size: 12px; color: var(--text-2); margin-bottom: 12px; line-height: 1.6; }
+  .order-meta { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+  .meta-item { text-align: center; }
+  .meta-label { font-size: 10px; color: var(--text-3); margin-bottom: 2px; }
+  .meta-val { font-family: var(--font-head); font-weight: 700; font-size: 14px; color: var(--text); }
+  .meta-val.green { color: var(--success); }
+  .meta-val.orange { color: var(--primary); }
+  .btn-bit {
+    width: 100%; padding: 14px;
+    background: var(--primary);
+    color: #fff;
+    border: none; border-radius: 12px;
+    font-family: var(--font-head); font-weight: 700; font-size: 16px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: all 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-bit:active { transform: scale(0.97); }
+  .btn-bit::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: rgba(255,255,255,0.15);
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .btn-bit:active::after { opacity: 1; }
+  .btn-bit .lightning { font-size: 20px; }
+
+  /* DELIVERY STATUS */
+  .delivery-card { padding: 16px; }
+  .delivery-status-bar {
+    display: flex; align-items: center;
+    margin-bottom: 16px; position: relative;
+  }
+  .delivery-status-bar::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 0; right: 0;
+    height: 2px;
+    background: var(--border);
+    z-index: 0;
+  }
+  .ds-step {
+    display: flex; flex-direction: column; align-items: center;
+    flex: 1; position: relative; z-index: 1;
+  }
+  .ds-circle {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700;
+    border: 2px solid var(--border);
+    background: var(--card);
+    transition: all 0.3s;
+  }
+  .ds-circle.done { background: var(--success); border-color: var(--success); color: #fff; }
+  .ds-circle.active { background: var(--primary); border-color: var(--primary); color: #fff; animation: stepPulse 1.5s infinite; }
+  @keyframes stepPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255,77,28,0.4); }
+    50% { box-shadow: 0 0 0 6px rgba(255,77,28,0); }
+  }
+  .ds-label { font-size: 9px; color: var(--text-3); margin-top: 4px; text-align: center; max-width: 56px; }
+  .ds-label.active { color: var(--primary); font-weight: 600; }
+  .ds-label.done { color: var(--success); }
+
+  .delivery-info { background: var(--bg); border-radius: 12px; padding: 12px; margin-bottom: 12px; }
+  .delivery-info-row { display: flex; align-items: center; gap: 10px; }
+  .delivery-info-row + .delivery-info-row { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+  .di-icon { font-size: 18px; }
+  .di-label { font-size: 11px; color: var(--text-3); }
+  .di-val { font-size: 13px; font-weight: 600; color: var(--text); }
+  .di-val.primary { color: var(--primary); }
+
+  .btn-action {
+    width: 100%; padding: 13px;
+    border: none; border-radius: 12px;
+    font-family: var(--font-head); font-weight: 700; font-size: 15px;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .btn-action:active { transform: scale(0.97); }
+  .btn-success { background: var(--success); color: #fff; }
+  .btn-outline { background: transparent; border: 2px solid var(--border); color: var(--text-2); }
+  .btn-secondary { background: var(--bg); color: var(--text); }
+  .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  /* WALLET SCREEN */
+  .wallet-hero {
+    background: linear-gradient(135deg, #1A1A2E 0%, #16213E 100%);
+    padding: 24px 20px;
+    margin: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .wallet-hero::after {
+    content: '';
+    position: absolute;
+    bottom: -50px; right: -50px;
+    width: 180px; height: 180px;
+    background: rgba(255,184,0,0.1);
+    border-radius: 50%;
+  }
+  .wallet-label { font-size: 12px; color: rgba(255,255,255,0.55); margin-bottom: 6px; }
+  .wallet-balance { font-family: var(--font-head); font-weight: 800; font-size: 36px; color: #fff; letter-spacing: -1px; }
+  .wallet-balance span { font-size: 20px; font-weight: 500; color: rgba(255,255,255,0.6); margin-right: 4px; }
+  .wallet-poin { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+  .poin-badge {
+    background: var(--accent);
+    color: #000; font-weight: 700; font-size: 12px;
+    padding: 3px 10px; border-radius: 20px;
+  }
+  .poin-label { font-size: 12px; color: rgba(255,255,255,0.6); }
+  .wallet-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 16px 20px; }
+  .wallet-btn {
+    background: var(--card); border-radius: 14px;
+    padding: 14px 12px; text-align: center;
+    border: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .wallet-btn-icon { font-size: 22px; margin-bottom: 4px; }
+  .wallet-btn-label { font-size: 12px; font-weight: 600; color: var(--text); }
+
+  /* HISTORY LIST */
+  .tx-item {
+    display: flex; align-items: center;
+    padding: 14px 16px; gap: 12px;
+  }
+  .tx-item + .tx-item { border-top: 1px solid var(--border); }
+  .tx-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .tx-icon.income { background: var(--success-light); }
+  .tx-icon.pending { background: var(--warning-light); }
+  .tx-icon.withdraw { background: var(--danger-light); }
+  .tx-info { flex: 1; }
+  .tx-title { font-size: 13px; font-weight: 600; color: var(--text); }
+  .tx-sub { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+  .tx-amount { font-family: var(--font-head); font-weight: 700; font-size: 14px; }
+  .tx-amount.green { color: var(--success); }
+  .tx-amount.orange { color: var(--warning); }
+  .tx-amount.red { color: var(--danger); }
+
+  /* PROFILE SCREEN */
+  .profile-hero { background: var(--card); padding: 24px 20px; text-align: center; border-bottom: 1px solid var(--border); }
+  .avatar {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary) 0%, #FF7849 100%);
+    margin: 0 auto 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-head); font-weight: 800; font-size: 28px; color: #fff;
+  }
+  .profile-name { font-family: var(--font-head); font-weight: 700; font-size: 20px; color: var(--text); }
+  .profile-id { font-size: 12px; color: var(--text-3); margin-top: 4px; }
+  .tier-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: linear-gradient(90deg, #FFB800, #FF8C00);
+    color: #fff; font-weight: 700; font-size: 11px;
+    padding: 4px 12px; border-radius: 20px; margin-top: 8px;
+  }
+  .profile-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; padding: 0 20px; }
+  .pstat { text-align: center; padding: 16px 8px; border-right: 1px solid var(--border); }
+  .pstat:last-child { border-right: none; }
+  .pstat-val { font-family: var(--font-head); font-weight: 700; font-size: 18px; color: var(--text); }
+  .pstat-label { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+  .profile-menu { padding: 12px 20px; }
+  .menu-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px; background: var(--card);
+    border-radius: var(--radius-sm);
+    cursor: pointer; transition: all 0.15s;
+    margin-bottom: 8px;
+  }
+  .menu-item:active { opacity: 0.7; }
+  .menu-icon { font-size: 20px; width: 24px; text-align: center; }
+  .menu-label { flex: 1; font-size: 14px; font-weight: 500; color: var(--text); }
+  .menu-arrow { font-size: 14px; color: var(--text-3); }
+
+  /* BOTTOM NAV */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 100%; max-width: 430px;
+    background: var(--card);
+    border-top: 1px solid var(--border);
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    padding-bottom: env(safe-area-inset-bottom);
+    z-index: 200;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+  }
+  .nav-item {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 10px 4px 8px;
+    cursor: pointer; transition: all 0.15s;
+    position: relative;
+  }
+  .nav-icon { font-size: 22px; transition: all 0.2s; }
+  .nav-label { font-size: 10px; font-weight: 500; color: var(--text-3); margin-top: 3px; transition: all 0.2s; }
+  .nav-item.active .nav-icon { filter: drop-shadow(0 0 4px rgba(255,77,28,0.4)); }
+  .nav-item.active .nav-label { color: var(--primary); font-weight: 700; }
+  .nav-notif {
+    position: absolute; top: 6px; right: 28%;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--primary); color: #fff;
+    font-size: 9px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid var(--card);
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 500;
+    display: flex; align-items: flex-end;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal-sheet {
+    background: var(--card);
+    border-radius: 24px 24px 0 0;
+    padding: 20px 20px 40px;
+    width: 100%;
+    transform: translateY(100%);
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .modal-overlay.open .modal-sheet { transform: translateY(0); }
+  .modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 20px; }
+  .modal-title { font-family: var(--font-head); font-weight: 700; font-size: 18px; text-align: center; margin-bottom: 20px; }
+  .success-anim { font-size: 60px; text-align: center; margin-bottom: 16px; animation: successBounce 0.6s ease; }
+  @keyframes successBounce {
+    0% { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.2); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .success-title { font-family: var(--font-head); font-weight: 700; font-size: 20px; text-align: center; color: var(--success); }
+  .success-sub { font-size: 14px; color: var(--text-2); text-align: center; margin-top: 6px; line-height: 1.5; }
+  .earning-box {
+    background: var(--success-light);
+    border-radius: 14px; padding: 16px;
+    text-align: center; margin: 16px 0;
+  }
+  .earning-label { font-size: 12px; color: var(--success); margin-bottom: 4px; }
+  .earning-val { font-family: var(--font-head); font-weight: 800; font-size: 28px; color: var(--success); }
+
+  /* TOAST */
+  .toast {
+    position: fixed; top: 80px; left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: #1A1A1A; color: #fff;
+    padding: 10px 18px; border-radius: 20px;
+    font-size: 13px; font-weight: 500;
+    opacity: 0; transition: all 0.3s;
+    z-index: 1000; white-space: nowrap;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center; padding: 40px 20px;
+    color: var(--text-3);
+  }
+  .empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.4; }
+  .empty-text { font-size: 14px; }
+
+  /* RATING */
+  .rating-stars { display: flex; justify-content: center; gap: 8px; margin: 16px 0; }
+  .star { font-size: 36px; cursor: pointer; transition: transform 0.1s; }
+  .star:active { transform: scale(1.3); }
+
+  /* RADIUS INDICATOR */
+  .radius-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--primary-light); color: var(--primary);
+    font-size: 11px; font-weight: 600;
+    padding: 3px 8px; border-radius: 20px;
+    margin-left: 8px;
+  }
+
+  /* SCROLLABLE */
+  .scroll-area { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+
+  /* CHIPS */
+  .chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 600;
+  }
+  .chip-success { background: var(--success-light); color: var(--success); }
+  .chip-warning { background: var(--warning-light); color: var(--warning); }
+  .chip-primary { background: var(--primary-light); color: var(--primary); }
+
+  /* COUNTDOWN RING */
+  .countdown-wrap { display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
+  .ring-text { font-family: var(--font-head); font-weight: 800; font-size: 13px; color: var(--primary); }
+
+  .competitors-row { display: flex; align-items: center; gap: 6px; margin-bottom: 12px; }
+  .competitor-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: #fff;
+    border: 2px solid var(--card);
+    margin-left: -6px;
+  }
+  .competitor-avatar:first-child { margin-left: 0; }
+  .competitors-text { font-size: 11px; color: var(--text-2); }
+</style>
+</head>
+<body>
+
+<!-- SCREENS -->
+
+<!-- HOME SCREEN -->
+<div class="screen active" id="screen-home">
+  <div class="topbar">
+    <div class="topbar-row">
+      <div class="logo">MIDO<span>.</span></div>
+      <div class="status-pill online" id="statusPill" onclick="toggleStatus()">
+        <div class="dot green" id="statusDot"></div>
+        <span id="statusText">Online</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="hero-greeting">Selamat pagi ☀️</div>
+    <div class="hero-name">Budi Santoso</div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-val" id="todayOrders">8</div>
+        <div class="hero-stat-label">Antar Hari Ini</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-val">4.9⭐</div>
+        <div class="hero-stat-label">Rating</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-val">92%</div>
+        <div class="hero-stat-label">Sukses BIT</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTIVE ORDER NOTIFICATION -->
+  <div class="section" id="orderNotifSection">
+    <div class="section-title">
+      🔥 Pesanan Masuk
+      <span class="radius-badge">📍 2.3 km</span>
+    </div>
+
+    <div class="order-card" id="orderCard">
+      <div class="order-card-header">
+        <div class="order-card-header-left">
+          <span class="order-badge">Baru</span>
+          <span class="order-header-title">Pesanan #FASTO-7821</span>
+        </div>
+        <div class="timer-pill" id="countdownTimer">45</div>
+      </div>
+      <div class="order-card-body">
+        <div class="competitors-row">
+          <div class="competitor-avatar" style="background:#FF7849">BS</div>
+          <div class="competitor-avatar" style="background:#4CAF50">DK</div>
+          <div class="competitor-avatar" style="background:#2196F3">RM</div>
+          <div class="competitors-text">+2 MIDO lain sedang melihat pesanan ini</div>
+        </div>
+        <div class="resto-row">
+          <div class="resto-icon">🍜</div>
+          <div>
+            <div class="resto-name">Warung Mak Encim</div>
+            <div class="resto-addr">📍 Jl. Kemang Raya No. 12 · 2.3 km</div>
+          </div>
+        </div>
+        <div class="order-items">
+          • Mie Ayam Bakso Special × 2<br>
+          • Es Teh Manis × 2<br>
+          • Siomay Goreng × 1
+        </div>
+        <div class="order-meta">
+          <div class="meta-item">
+            <div class="meta-label">Jarak Antar</div>
+            <div class="meta-val orange">3.1 km</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Komisi</div>
+            <div class="meta-val green">Rp 7.500</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Total Order</div>
+            <div class="meta-val">Rp 65.000</div>
+          </div>
+        </div>
+        <button class="btn-bit" onclick="doBIT()">
+          <span class="lightning">⚡</span>
+          BIT – Ambil Pesanan!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUICK STATS -->
+  <div class="section" style="margin-top: 8px;">
+    <div class="section-title">Penghasilan Hari Ini</div>
+    <div class="card" style="padding: 16px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+        <div>
+          <div style="font-size: 11px; color: var(--text-3);">Total Komisi</div>
+          <div style="font-family: var(--font-head); font-weight: 800; font-size: 26px; color: var(--success);">Rp 60.000</div>
+        </div>
+        <div style="font-size: 36px;">💰</div>
+      </div>
+      <div style="background: var(--bg); border-radius: 10px; padding: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div>
+          <div style="font-size: 11px; color: var(--text-3);">Poin Terkumpul</div>
+          <div style="font-family: var(--font-head); font-weight: 700; font-size: 18px; color: var(--accent-dark);">+480 ⭐</div>
+        </div>
+        <div>
+          <div style="font-size: 11px; color: var(--text-3);">BIT Berhasil</div>
+          <div style="font-family: var(--font-head); font-weight: 700; font-size: 18px;">8/9</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECENT ORDERS -->
+  <div class="section" style="margin-top: 8px; padding-bottom: 20px;">
+    <div class="section-title">Riwayat Terkini <a href="#" onclick="switchScreen('history'); return false;">Lihat semua →</a></div>
+    <div class="card">
+      <div class="tx-item">
+        <div class="tx-icon income">✅</div>
+        <div class="tx-info">
+          <div class="tx-title">Dapur Ibu Lastri</div>
+          <div class="tx-sub">Selesai · 13:45 · 2.8 km</div>
+        </div>
+        <div>
+          <div class="tx-amount green">+Rp 8.500</div>
+          <div style="font-size: 10px; color: var(--text-3); text-align: right;">+68 ⭐</div>
+        </div>
+      </div>
+      <div class="tx-item">
+        <div class="tx-icon income">✅</div>
+        <div class="tx-info">
+          <div class="tx-title">Bakso Mas Bro</div>
+          <div class="tx-sub">Selesai · 11:20 · 1.9 km</div>
+        </div>
+        <div>
+          <div class="tx-amount green">+Rp 6.000</div>
+          <div style="font-size: 10px; color: var(--text-3); text-align: right;">+48 ⭐</div>
+        </div>
+      </div>
+      <div class="tx-item">
+        <div class="tx-icon pending">⏳</div>
+        <div class="tx-info">
+          <div class="tx-title">Kedai Pak Udin</div>
+          <div class="tx-sub">Menunggu konfirmasi · 09:55</div>
+        </div>
+        <div>
+          <div class="tx-amount orange">Pending</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DELIVERY SCREEN (Active delivery) -->
+<div class="screen" id="screen-delivery">
+  <div class="topbar">
+    <div class="topbar-row">
+      <div class="logo">MIDO<span>.</span></div>
+      <div class="chip chip-primary">🏃 Sedang Antar</div>
+    </div>
+  </div>
+
+  <div class="section" style="padding-top: 20px;">
+    <div class="section-title">Status Pengantaran</div>
+
+    <div class="card delivery-card">
+      <!-- Progress Steps -->
+      <div class="delivery-status-bar">
+        <div class="ds-step">
+          <div class="ds-circle done">✓</div>
+          <div class="ds-label done">Terima<br>Pesanan</div>
+        </div>
+        <div class="ds-step">
+          <div class="ds-circle done">✓</div>
+          <div class="ds-label done">Di Resto</div>
+        </div>
+        <div class="ds-step">
+          <div class="ds-circle active">🛵</div>
+          <div class="ds-label active">Dalam<br>Perjalanan</div>
+        </div>
+        <div class="ds-step">
+          <div class="ds-circle">🏠</div>
+          <div class="ds-label">Tiba di<br>Tujuan</div>
+        </div>
+      </div>
+
+      <!-- Map placeholder -->
+      <div style="background: linear-gradient(135deg, #E8F4FD, #EDF7F0); border-radius: 12px; height: 160px; margin-bottom: 14px; display: flex; align-items: center; justify-content: center; font-size: 40px; position: relative; overflow: hidden;">
+        <div style="position: absolute; top: 12px; left: 12px; background: var(--card); padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; color: var(--success);">🟢 Jalur Terbaik</div>
+        <div style="position: absolute; bottom: 12px; right: 12px; background: var(--primary); color: #fff; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700;">~8 menit</div>
+        🗺️
+      </div>
+
+      <div class="delivery-info">
+        <div class="delivery-info-row">
+          <div class="di-icon">📍</div>
+          <div style="flex:1">
+            <div class="di-label">Tujuan Pengiriman</div>
+            <div class="di-val primary">Jl. Panjang Indah No. 88, Blok B2</div>
+          </div>
+        </div>
+        <div class="delivery-info-row">
+          <div class="di-icon">👤</div>
+          <div style="flex:1">
+            <div class="di-label">Penerima</div>
+            <div class="di-val">Siti Rahma · 0812-xxxx-xxxx</div>
+          </div>
+        </div>
+        <div class="delivery-info-row">
+          <div class="di-icon">🛍️</div>
+          <div style="flex:1">
+            <div class="di-label">Pesanan</div>
+            <div class="di-val">Mie Ayam Bakso ×2, Es Teh ×2, Siomay ×1</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Komisi info -->
+      <div style="background: var(--success-light); border-radius: 10px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+        <div style="font-size: 12px; color: var(--success);">Komisi yang akan masuk</div>
+        <div style="font-family: var(--font-head); font-weight: 700; font-size: 16px; color: var(--success);">Rp 7.500 + 60⭐</div>
+      </div>
+
+      <button class="btn-action btn-success" onclick="completeDelivery()">
+        ✅ Konfirmasi Pesanan Tersampaikan
+      </button>
+      <div style="height: 10px;"></div>
+      <div class="btn-row">
+        <button class="btn-action btn-secondary" style="font-size: 13px;" onclick="callCustomer()">📞 Hubungi Penerima</button>
+        <button class="btn-action btn-secondary" style="font-size: 13px;" onclick="navToDestination()">🗺️ Navigasi</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY SCREEN -->
+<div class="screen" id="screen-history">
+  <div class="topbar">
+    <div class="topbar-row">
+      <div class="logo">Riwayat</div>
+      <div style="font-size: 12px; color: var(--text-3);">Mei 2025</div>
+    </div>
+  </div>
+
+  <div class="section" style="padding-top: 16px;">
+    <!-- Summary -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px;">
+      <div style="background: var(--success-light); border-radius: 14px; padding: 14px;">
+        <div style="font-size: 11px; color: var(--success);">Total Komisi Bulan Ini</div>
+        <div style="font-family: var(--font-head); font-weight: 800; font-size: 22px; color: var(--success); margin-top: 4px;">Rp 1,24jt</div>
+      </div>
+      <div style="background: var(--warning-light); border-radius: 14px; padding: 14px;">
+        <div style="font-size: 11px; color: var(--warning);">Total Antar Bulan Ini</div>
+        <div style="font-family: var(--font-head); font-weight: 800; font-size: 22px; color: var(--warning); margin-top: 4px;">148 Order</div>
+      </div>
+    </div>
+
+    <div class="section-title" style="padding: 0;">Riwayat Lengkap</div>
+  </div>
+
+  <div style="padding: 12px 20px 20px;">
+    <div class="card">
+      <div class="tx-item">
+        <div class="tx-icon income">✅</div>
+        <div class="tx-info">
+          <div class="tx-title">Warung Mak Encim</div>
+          <div class="tx-sub">Selesai · Hari ini 15:30 · 3.1 km</div>
+        </div>
+        <div>
+          <div class="tx-amount green">+Rp 7.500</div>
+          <div style="font-size: 10px; color: var(--text-3); text-align: right;">+60 ⭐</div>
+        </div>
+      </div>
+      <div class="tx-item">
+        <div class="tx-icon income">✅</div>
+        <div class="tx-info">
+          <div class="tx-title">Dapur Ibu Lastri</div>
+          <div class="tx-sub">Selesai · Hari ini 13:45</div>
+        </div>
+        <div>
+          <div class="tx-amount green">+Rp 8.500</div>
+          <div style="font-size: 10px; color: var(--text-3); text-align: right;">+68 ⭐</div>
+        </div>
+      </div>
+      <div class="tx-item">
+        <div class="tx-icon income">✅</div>
+        <div class="tx-info">
+          <div class="tx-title">Bakso Mas Bro</div>
+          <div class="tx-sub">Selesai · Hari ini 11:20</div>
+        </div>
+        <div>
+          <div class="tx-amount green">+Rp 6.000</div>
+          <div style="font-size: 10px; color: var(--text-3); text-align: right;">+48 ⭐</div>
+        </div>
+      </div>
+      <div class="tx-item">
+        <div class="tx-icon pending" style="background:#FFF0EC;">❌</div>
+        <div class="tx-info">
+          <div class="tx-title">Kedai Pak Udin</div>
+          <div class="tx-sub" style="color: var(--danger);">BIT gagal · Kemarin 09:55</div>
+        </div>
+        <div>
+          <div class="tx-amount" style="color: var(--text-3);">–</div>
+        </div>
+      </div>
+      <div class="tx-item">
+        <div class="tx-icon income">✅</div>
+        <div class="tx-info">
+          <div class="tx-title">Nasi Goreng Bu Tuti</div>
+          <div class="tx-sub">Selesai · Kemarin 18:00</div>
+        </div>
+        <div>
+          <div class="tx-amount green">+Rp 9.000</div>
+          <div style="font-size: 10px; color: var(--text-3); text-align: right;">+72 ⭐</div>
+        </div>
+      </div>
+      <div class="tx-item">
+        <div class="tx-icon withdraw">💸</div>
+        <div class="tx-info">
+          <div class="tx-title">Pencairan Saldo</div>
+          <div class="tx-sub">Ke BRI 1234xx · 3 hari lalu</div>
+        </div>
+        <div>
+          <div class="tx-amount red">-Rp 500.000</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- WALLET SCREEN -->
+<div class="screen" id="screen-wallet">
+  <div class="topbar">
+    <div class="topbar-row">
+      <div class="logo">Dompet MIDO</div>
+    </div>
+  </div>
+
+  <div class="wallet-hero">
+    <div class="wallet-label">Saldo Komisi Anda</div>
+    <div class="wallet-balance"><span>Rp</span>342.500</div>
+    <div class="wallet-poin">
+      <div class="poin-badge">⭐ 2.840 Poin</div>
+      <div class="poin-label">≈ Rp 28.400 ekuivalen</div>
+    </div>
+  </div>
+
+  <div class="wallet-actions">
+    <div class="wallet-btn" onclick="showToast('Fitur tarik saldo segera hadir!')">
+      <div class="wallet-btn-icon">💸</div>
+      <div class="wallet-btn-label">Tarik Saldo</div>
+    </div>
+    <div class="wallet-btn" onclick="showToast('Fitur tukar poin segera hadir!')">
+      <div class="wallet-btn-icon">🔄</div>
+      <div class="wallet-btn-label">Tukar Poin</div>
+    </div>
+  </div>
+
+  <!-- Tier progress -->
+  <div style="padding: 0 20px 16px;">
+    <div class="card" style="padding: 16px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+        <div>
+          <div style="font-size: 11px; color: var(--text-3);">Tier Saat Ini</div>
+          <div style="font-family: var(--font-head); font-weight: 700; font-size: 16px; color: var(--text);">🥈 Silver MIDO</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 11px; color: var(--text-3);">Menuju Gold</div>
+          <div style="font-size: 12px; font-weight: 600; color: var(--accent-dark);">1.160 poin lagi</div>
+        </div>
+      </div>
+      <div style="background: var(--bg); border-radius: 6px; height: 8px; overflow: hidden;">
+        <div style="background: linear-gradient(90deg, #FFB800, #FF8C00); width: 71%; height: 100%; border-radius: 6px;"></div>
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+        <div style="font-size: 10px; color: var(--text-3);">Silver: 2.000</div>
+        <div style="font-size: 10px; color: var(--text-3);">Gold: 4.000</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent transactions -->
+  <div style="padding: 0 20px 20px;">
+    <div class="section-title" style="padding: 0; margin-bottom: 12px;">Transaksi Terakhir</div>
+    <div class="card">
+      <div class="tx-item">
+        <div class="tx-icon income">✅</div>
+        <div class="tx-info">
+          <div class="tx-title">Komisi Pengantaran</div>
+          <div class="tx-sub">Warung Mak Encim · Hari ini</div>
+        </div>
+        <div>
+          <div class="tx-amount green">+Rp 7.500</div>
+          <div style="font-size: 10px; color: var(--text-3); text-align: right;">+60 ⭐</div>
+        </div>
+      </div>
+      <div class="tx-item">
+        <div class="tx-icon income">✅</div>
+        <div class="tx-info">
+          <div class="tx-title">Bonus Performa Harian</div>
+          <div class="tx-sub">Min. 8 antar tercapai</div>
+        </div>
+        <div>
+          <div class="tx-amount green">+Rp 15.000</div>
+          <div style="font-size: 10px; color: var(--text-3); text-align: right;">+120 ⭐</div>
+        </div>
+      </div>
+      <div class="tx-item">
+        <div class="tx-icon withdraw">💸</div>
+        <div class="tx-info">
+          <div class="tx-title">Pencairan ke BRI</div>
+          <div class="tx-sub">•••• 7823 · 3 hari lalu</div>
+        </div>
+        <div>
+          <div class="tx-amount red">-Rp 500.000</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE SCREEN -->
+<div class="screen" id="screen-profile">
+  <div class="profile-hero">
+    <div class="avatar">BS</div>
+    <div class="profile-name">Budi Santoso</div>
+    <div class="profile-id">ID: MIDO-2024-04871</div>
+    <div class="tier-badge">🥈 Silver MIDO</div>
+  </div>
+
+  <div class="card profile-stats">
+    <div class="pstat">
+      <div class="pstat-val">148</div>
+      <div class="pstat-label">Total Antar</div>
+    </div>
+    <div class="pstat">
+      <div class="pstat-val">4.9⭐</div>
+      <div class="pstat-label">Rating</div>
+    </div>
+    <div class="pstat">
+      <div class="pstat-val">6 bln</div>
+      <div class="pstat-label">Bergabung</div>
+    </div>
+  </div>
+
+  <div class="profile-menu">
+    <div class="menu-item" onclick="showToast('Membuka profil...')">
+      <div class="menu-icon">👤</div>
+      <div class="menu-label">Data Diri & Kendaraan</div>
+      <div class="menu-arrow">›</div>
+    </div>
+    <div class="menu-item" onclick="showToast('Membuka pengaturan...')">
+      <div class="menu-icon">🔔</div>
+      <div class="menu-label">Pengaturan Notifikasi</div>
+      <div class="menu-arrow">›</div>
+    </div>
+    <div class="menu-item" onclick="showToast('Membuka radius...')">
+      <div class="menu-icon">📍</div>
+      <div class="menu-label">Radius Terima Pesanan</div>
+      <div class="menu-arrow">›</div>
+    </div>
+    <div class="menu-item" onclick="showToast('Membuka bantuan...')">
+      <div class="menu-icon">💬</div>
+      <div class="menu-label">Bantuan & CS FASTO</div>
+      <div class="menu-arrow">›</div>
+    </div>
+    <div class="menu-item" onclick="showToast('Keluar...')">
+      <div class="menu-icon">🚪</div>
+      <div class="menu-label" style="color: var(--danger);">Keluar Akun</div>
+      <div class="menu-arrow">›</div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <div class="nav-item active" id="nav-home" onclick="switchScreen('home')">
+    <div class="nav-icon">🏠</div>
+    <div class="nav-label">Beranda</div>
+    <div class="nav-notif" id="orderNotifBadge">1</div>
+  </div>
+  <div class="nav-item" id="nav-delivery" onclick="switchScreen('delivery')">
+    <div class="nav-icon">🛵</div>
+    <div class="nav-label">Antar</div>
+  </div>
+  <div class="nav-item" id="nav-history" onclick="switchScreen('history')">
+    <div class="nav-icon">📋</div>
+    <div class="nav-label">Riwayat</div>
+  </div>
+  <div class="nav-item" id="nav-wallet" onclick="switchScreen('wallet')">
+    <div class="nav-icon">💰</div>
+    <div class="nav-label">Dompet</div>
+  </div>
+</nav>
+
+<!-- MODALS -->
+
+<!-- BIT Result Modal -->
+<div class="modal-overlay" id="modalBIT">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="success-anim">⚡</div>
+    <div class="success-title">BIT Berhasil!</div>
+    <div class="success-sub">Kamu berhasil mengambil pesanan ini.<br>Segera menuju restoran!</div>
+    <div style="background: var(--primary-light); border-radius: 14px; padding: 14px; margin: 16px 0;">
+      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+        <div style="font-size: 12px; color: var(--text-2);">Restoran</div>
+        <div style="font-size: 13px; font-weight: 600;">Warung Mak Encim</div>
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+        <div style="font-size: 12px; color: var(--text-2);">Jarak ke Resto</div>
+        <div style="font-size: 13px; font-weight: 600; color: var(--primary);">2.3 km</div>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <div style="font-size: 12px; color: var(--text-2);">Komisi Anda</div>
+        <div style="font-size: 15px; font-weight: 800; color: var(--success);">Rp 7.500 + 60⭐</div>
+      </div>
+    </div>
+    <button class="btn-action btn-success" style="margin-bottom: 10px;" onclick="goToDelivery()">
+      🗺️ Navigasi ke Restoran
+    </button>
+    <button class="btn-action btn-outline" onclick="closeModal('modalBIT')">Tutup</button>
+  </div>
+</div>
+
+<!-- Delivery Complete Modal -->
+<div class="modal-overlay" id="modalComplete">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="success-anim">🎉</div>
+    <div class="success-title">Pesanan Tersampaikan!</div>
+    <div class="success-sub">Komisi langsung masuk ke saldo kamu</div>
+    <div class="earning-box">
+      <div class="earning-label">Komisi Masuk</div>
+      <div class="earning-val">+Rp 7.500</div>
+      <div style="font-size: 14px; color: var(--success); margin-top: 4px; font-weight: 600;">+60 ⭐ Poin</div>
+    </div>
+    <div style="margin-bottom: 16px;">
+      <div style="font-size: 13px; font-weight: 600; text-align: center; margin-bottom: 12px; color: var(--text-2);">Beri rating pengalaman ini</div>
+      <div class="rating-stars" id="ratingStars">
+        <div class="star" onclick="setRating(1)">⭐</div>
+        <div class="star" onclick="setRating(2)">⭐</div>
+        <div class="star" onclick="setRating(3)">⭐</div>
+        <div class="star" onclick="setRating(4)">⭐</div>
+        <div class="star" onclick="setRating(5)">⭐</div>
+      </div>
+    </div>
+    <button class="btn-action btn-success" onclick="finishAndGoHome()">
+      Selesai &amp; Cari Pesanan Baru
+    </button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // Screen management
+  function switchScreen(name) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('screen-' + name).classList.add('active');
+    const navEl = document.getElementById('nav-' + name);
+    if (navEl) navEl.classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  // History nav fix
+  function setupHistoryNav() {
+    const histNav = document.querySelector('.nav-item[onclick*="history"]');
+  }
+
+  // Status toggle
+  let isOnline = true;
+  function toggleStatus() {
+    isOnline = !isOnline;
+    const pill = document.getElementById('statusPill');
+    const dot = document.getElementById('statusDot');
+    const text = document.getElementById('statusText');
+    if (isOnline) {
+      pill.className = 'status-pill online';
+      dot.className = 'dot green';
+      text.textContent = 'Online';
+      showToast('Kamu sekarang Online 🟢');
+    } else {
+      pill.className = 'status-pill offline';
+      dot.className = 'dot gray';
+      text.textContent = 'Offline';
+      showToast('Kamu sekarang Offline ⚫');
+    }
+  }
+
+  // Countdown timer
+  let countdown = 45;
+  let countdownInterval;
+  function startCountdown() {
+    clearInterval(countdownInterval);
+    countdown = 45;
+    countdownInterval = setInterval(() => {
+      countdown--;
+      const el = document.getElementById('countdownTimer');
+      if (el) el.textContent = countdown;
+      if (countdown <= 0) {
+        clearInterval(countdownInterval);
+        const orderCard = document.getElementById('orderCard');
+        if (orderCard) orderCard.style.opacity = '0.5';
+        showToast('Waktu habis! Pesanan diambil MIDO lain');
+      }
+    }, 1000);
+  }
+  startCountdown();
+
+  // BIT action
+  function doBIT() {
+    clearInterval(countdownInterval);
+    openModal('modalBIT');
+    const badge = document.getElementById('orderNotifBadge');
+    if (badge) badge.style.display = 'none';
+  }
+
+  function goToDelivery() {
+    closeModal('modalBIT');
+    switchScreen('delivery');
+    document.getElementById('nav-delivery').classList.add('active');
+    document.getElementById('nav-home').classList.remove('active');
+  }
+
+  // Delivery complete
+  function completeDelivery() {
+    openModal('modalComplete');
+  }
+
+  function finishAndGoHome() {
+    closeModal('modalComplete');
+    switchScreen('home');
+    // Update stats
+    const todayOrders = document.getElementById('todayOrders');
+    if (todayOrders) todayOrders.textContent = parseInt(todayOrders.textContent) + 1;
+    showToast('Rp 7.500 + 60⭐ masuk ke saldo kamu!');
+    // Reset timer for next order
+    setTimeout(() => {
+      const orderCard = document.getElementById('orderCard');
+      if (orderCard) orderCard.style.opacity = '1';
+      countdown = 45;
+      startCountdown();
+      const badge = document.getElementById('orderNotifBadge');
+      if (badge) badge.style.display = 'flex';
+    }, 2000);
+  }
+
+  function callCustomer() { showToast('Menghubungi Siti Rahma...'); }
+  function navToDestination() { showToast('Membuka navigasi...'); }
+
+  // Rating
+  let selectedRating = 0;
+  function setRating(r) {
+    selectedRating = r;
+    const stars = document.querySelectorAll('#ratingStars .star');
+    stars.forEach((s, i) => {
+      s.style.filter = i < r ? 'grayscale(0)' : 'grayscale(1)';
+      s.style.opacity = i < r ? '1' : '0.3';
+    });
+    showToast('Rating ' + r + '⭐ diberikan!');
+  }
+
+  // Modal helpers
+  function openModal(id) {
+    document.getElementById(id).classList.add('open');
+  }
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+  }
+
+  // Close modal on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', function(e) {
+      if (e.target === this) this.classList.remove('open');
+    });
+  });
+
+  // Toast
+  let toastTimeout;
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => toast.classList.remove('show'), 2500);
+  }
+
+  // PWA Service Worker
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      // SW registration would go here in production
+    });
+  }
+
+  // Nav fix for history
+  document.querySelectorAll('.nav-item').forEach((item, idx) => {
+    const screens = ['home', 'delivery', 'history', 'wallet'];
+  });
+</script>
+</body>
+</html>
